@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.0.2] - 2026-11-17
+
+### Fixed
+
+- Raise the minimum AWS provider version of the module to `>= 6.33` (was `>= 6.0`): `cpu_options.nested_virtualization` needs 6.33 and `force_destroy` / `placement_group_id` on `aws_instance` need newer releases than 6.0, so `terraform validate` failed with any provider below 6.33. Examples now use `~> 6.33`
+- `data.aws_ssm_parameter.ami` no longer uses `var.ami == null` in `count`: an `ami` only known after apply (e.g. from another resource) caused `Invalid count argument`. The parameter is now always read when `create = true`; an explicit `ami` still takes precedence
+- Security group name no longer starts with `sg-` when `use_region_prefix = false` (AWS rejects it): it is now `ec2-sg-{account_name}-{project_name}[-{name_suffix}]`. `security_group_name` values starting with `sg-` are rejected by validation
+- `Name` tag of the IAM role and instance profile now matches the real name when it is truncated to 64 characters
+- README: `source` uses `github.com/jhonmezaa/terraform-aws-ec2//ec2?ref=<tag>` and requirements show `aws >= 6.33`
+
+### Upgrade notes
+
+- The AMI SSM parameter is read even when `ami` is set, so the caller needs `ssm:GetParameter` on it (same behaviour as the official module)
+- Requires AWS provider `>= 6.33`. Lower versions never worked with this module
+- No resource is replaced: security group names only change for `use_region_prefix = false`, which could not be applied before
+
 ## [v1.0.1] - 2026-10-27
 
 ### Changed

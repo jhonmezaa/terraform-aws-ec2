@@ -58,6 +58,7 @@ Resources follow the standard naming pattern:
 | EBS volume                | `{region_prefix}-ebs-ec2-{account}-{project}-{key}` | `ause1-ebs-ec2-prod-myapp-data` |
 
 - Region prefixes are auto-detected (e.g., `us-east-1` -> `ause1`). Override with `region_prefix` or drop it with `use_region_prefix = false`.
+- With `use_region_prefix = false` the security group is named `ec2-sg-{account}-{project}` because AWS rejects security group names starting with `sg-`. An explicit `security_group_name` starting with `sg-` is rejected by validation.
 - Every name can be overridden explicitly (`name`, `security_group_name`, `iam_role_name`, `eip_name`, `ebs_volumes[*].name`).
 - IAM role names are truncated to 64 characters. With `iam_role_use_name_prefix = true` the name is truncated to 38 characters and AWS appends a random suffix.
 - All resources get `Name` and `ManagedBy = "Terraform"` tags, merged with `tags_common` and the resource-specific tag maps.
@@ -68,7 +69,7 @@ Resources follow the standard naming pattern:
 
 ```hcl
 module "ec2" {
-  source = "./terraform-aws-ec2/ec2"
+  source = "github.com/jhonmezaa/terraform-aws-ec2//ec2?ref=v1.0.2"
 
   account_name = "prod"
   project_name = "myapp"
@@ -94,7 +95,7 @@ module "ec2" {
 
 ```hcl
 module "ec2_spot" {
-  source = "./terraform-aws-ec2/ec2"
+  source = "github.com/jhonmezaa/terraform-aws-ec2//ec2?ref=v1.0.2"
 
   account_name = "dev"
   project_name = "batch"
@@ -115,7 +116,7 @@ module "ec2_spot" {
 
 ```hcl
 module "ec2" {
-  source = "./terraform-aws-ec2/ec2"
+  source = "github.com/jhonmezaa/terraform-aws-ec2//ec2?ref=v1.0.2"
 
   account_name = "prod"
   project_name = "bastion"
@@ -142,7 +143,7 @@ The module manages **one instance per call**. Use `for_each` in the caller and `
 
 ```hcl
 module "ec2" {
-  source   = "./terraform-aws-ec2/ec2"
+  source   = "github.com/jhonmezaa/terraform-aws-ec2//ec2?ref=v1.0.2"
   for_each = toset(["web-1", "web-2"])
 
   account_name = "prod"
@@ -165,7 +166,7 @@ module "ec2" {
 | Name      | Version |
 | --------- | ------- |
 | terraform | >= 1.3  |
-| aws       | >= 6.0  |
+| aws       | >= 6.33 |
 
 ## Inputs
 
