@@ -33,4 +33,4 @@ aws ssm start-session --target "$(terraform output -raw instance_id)"
 | Name      | Version |
 | --------- | ------- |
 | terraform | ~> 1.3  |
-| aws       | ~> 6.0  |
+| aws       | ~> 6.33 |

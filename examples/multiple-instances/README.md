@@ -27,4 +27,4 @@ terraform apply
 | Name      | Version |
 | --------- | ------- |
 | terraform | ~> 1.3  |
-| aws       | ~> 6.0  |
+| aws       | ~> 6.33 |
