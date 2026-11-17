@@ -31,7 +31,7 @@ resource "aws_iam_role" "this" {
     var.tags_common,
     var.iam_role_tags,
     {
-      Name      = local.iam_role_name_full
+      Name      = local.iam_role_name_tag
       ManagedBy = "Terraform"
     }
   )
@@ -64,7 +64,7 @@ resource "aws_iam_instance_profile" "this" {
     var.tags_common,
     var.iam_role_tags,
     {
-      Name      = local.iam_role_name_full
+      Name      = local.iam_role_name_tag
       ManagedBy = "Terraform"
     }
   )

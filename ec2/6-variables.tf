@@ -571,9 +571,14 @@ variable "create_security_group" {
 }
 
 variable "security_group_name" {
-  description = "Security group name. If null, it is generated as {region_prefix}-sg-ec2-{account_name}-{project_name}[-{name_suffix}]."
+  description = "Security group name. If null, it is generated as {region_prefix}-sg-ec2-{account_name}-{project_name}[-{name_suffix}] (ec2-sg-{account_name}-{project_name}[-{name_suffix}] when `use_region_prefix = false`)."
   type        = string
   default     = null
+
+  validation {
+    condition     = var.security_group_name == null || !can(regex("^sg-", coalesce(var.security_group_name, "x")))
+    error_message = "security_group_name no puede empezar por \"sg-\" (AWS lo rechaza)."
+  }
 }
 
 variable "security_group_use_name_prefix" {

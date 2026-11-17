@@ -68,16 +68,27 @@ locals {
   # Resource Naming
   # =============================================================================
 
-  instance_name       = coalesce(var.name, "${local.name_prefix}ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
-  security_group_name = coalesce(var.security_group_name, "${local.name_prefix}sg-ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
-  eip_name            = coalesce(var.eip_name, "${local.name_prefix}eip-ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
-  ebs_name_base       = "${local.name_prefix}ebs-ec2-${var.account_name}-${var.project_name}${local.name_suffix}"
+  instance_name = coalesce(var.name, "${local.name_prefix}ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
+  eip_name      = coalesce(var.eip_name, "${local.name_prefix}eip-ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
+  ebs_name_base = "${local.name_prefix}ebs-ec2-${var.account_name}-${var.project_name}${local.name_suffix}"
+
+  # AWS rejects security group names starting with "sg-", so without region
+  # prefix the type goes after the service: ec2-sg-{account_name}-{project_name}
+  security_group_name = coalesce(
+    var.security_group_name,
+    var.use_region_prefix
+    ? "${local.name_prefix}sg-ec2-${var.account_name}-${var.project_name}${local.name_suffix}"
+    : "ec2-sg-${var.account_name}-${var.project_name}${local.name_suffix}"
+  )
 
   # IAM role names are limited to 64 characters (38 when using name_prefix,
   # since AWS appends a 26-character random suffix)
   iam_role_name_full   = coalesce(var.iam_role_name, "${local.name_prefix}role-ec2-${var.account_name}-${var.project_name}${local.name_suffix}")
   iam_role_name        = var.iam_role_use_name_prefix ? null : substr(local.iam_role_name_full, 0, 64)
   iam_role_name_prefix = var.iam_role_use_name_prefix ? "${trimsuffix(substr(local.iam_role_name_full, 0, 37), "-")}-" : null
+
+  # Name tag of the IAM role / instance profile matches the real (truncated) name
+  iam_role_name_tag = coalesce(local.iam_role_name, local.iam_role_name_full)
 
   # =============================================================================
   # Instance Configuration
